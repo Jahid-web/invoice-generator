@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { MdOutlineAttachment } from "react-icons/md";
 import { HiOutlineDotsHorizontal } from "react-icons/hi";
+import useInvoice from "../hooks/useInvoice";
 
 const DataTable = () => {
   const [action, setAction] = useState(false);
+  const { currentItems } = useInvoice();
 
   return (
     <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -22,14 +24,14 @@ const DataTable = () => {
         </tr>
       </thead>
       <tbody>
-        {[1, 2, 3, 4, 5, 6].map((item, i) => (
-          <tr className="border-b dark:border-gray-700" key={item}>
-            <td className="px-4 py-3">PC</td>
-            <td className="px-4 py-3">Apple</td>
-            <td className="px-4 py-3">300</td>
-            <td className="px-4 py-3">$2999</td>
-            <td className="px-4 py-3 text-right">$2999</td>
-            <td className="px-4 py-3 text-right">$2999</td>
+        {currentItems.map((item, i) => (
+          <tr className="border-b dark:border-gray-700" key={item.invoiceNo}>
+            <td className="px-4 py-3">{item.invoiceNo}</td>
+            <td className="px-4 py-3">{item.payableTo}</td>
+            <td className="px-4 py-3">{item.voucherNo}</td>
+            <td className="px-4 py-3">${item.billAmount}</td>
+            <td className="px-4 py-3 text-right">{item.advanceAmount}</td>
+            <td className="px-4 py-3 text-right">"to do"</td>
             <td className="px-4 py-3 flex justify-center items-center">
               <MdOutlineAttachment className="text-xl text-center cursor-pointer" />
             </td>

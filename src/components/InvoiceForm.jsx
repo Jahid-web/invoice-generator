@@ -3,7 +3,6 @@ import { AiOutlineClose } from "react-icons/ai";
 import { LuLoader2 } from "react-icons/lu";
 import SelectionOptionMenu from "./SelectionOptionMenu";
 import InputField from "./InputField";
-import useInvoice from "../hooks/useInvoice";
 import { addDoc, collection } from "firebase/firestore";
 import { db } from "../firebase.config";
 

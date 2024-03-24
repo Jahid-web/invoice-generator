@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, Navigate } from "react-router-dom";
-import { useAuthContext } from "../auth/authContextProvider";
+import { useAuthContext } from "../context/auth/authContextProvider";
 import { FcGoogle } from "react-icons/fc";
 
 const SignUp = () => {

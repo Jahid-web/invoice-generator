@@ -1,8 +1,7 @@
 import React from "react";
 import { FaBars } from "react-icons/fa";
 import { MdPerson } from "react-icons/md";
-import { useAuthContext } from "../auth/authContextProvider";
-import { Navigate } from "react-router-dom";
+import { useAuthContext } from "../context/auth/authContextProvider";
 
 const Navbar = () => {
   const { currentUser, logout } = useAuthContext();
