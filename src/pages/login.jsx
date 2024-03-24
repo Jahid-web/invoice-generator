@@ -4,6 +4,7 @@ import { useAuthContext } from "../context/auth/authContextProvider";
 import { LuLoader2 } from "react-icons/lu";
 import { FcGoogle } from "react-icons/fc";
 import Toastify from "../utils/Toastify";
+import { toast } from "react-toastify";
 
 export const Login = () => {
   const [user, setUser] = useState({ email: "", password: "" });
@@ -18,6 +19,11 @@ export const Login = () => {
       setError("");
       setLoading(true);
       await signIn(user.email, user.password);
+      Toastify({
+        type: "success",
+        message: "You logged in successfully!",
+        position: "top-center",
+      });
     } catch (error) {
       setLoading(false);
       setError("Failed to login an account!");
@@ -44,6 +50,7 @@ export const Login = () => {
       [name]: value,
     });
   };
+
   return (
     <div className="dark:bg-gray-900 w-screen h-screen flex justify-center items-center">
       {currentUser && <Navigate to="/" replace={true} />}
@@ -57,6 +64,7 @@ export const Login = () => {
               Sign in below to access your account
             </p>
           </div>
+
           <div className="mt-5">
             <form onSubmit={handleSubmit}>
               <div className="relative mt-6">

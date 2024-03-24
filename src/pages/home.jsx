@@ -4,6 +4,8 @@ import DataTable from "../components/dataTable";
 import Navbar from "../components/navbar";
 import TabMenu from "../components/tabMenu";
 import InvoiceForm from "../components/InvoiceForm";
+import useInvoice from "../hooks/useInvoice";
+// import { Pagination } from "@mui/material";
 import Pagination from "../components/pagination";
 
 const Home = () => {
@@ -61,7 +63,12 @@ const Home = () => {
         <div className="overflow-x-auto mt-2">
           <DataTable />
         </div>
-        <Pagination />
+        {/* <Pagination
+          count={totalPages}
+          onChange={(event, value) => displayPage(value)}
+          variant="outlined"
+          shape="rounded"
+        /> */}
       </div>
     </div>
   );

@@ -14,16 +14,16 @@ export default (options) => {
 
   switch (options.type) {
     case "info":
-      toast.info(options.message, toastOptions);
+      return toast.info(options.message, toastOptions);
       break;
     case "success":
-      toast.success(options.message, toastOptions);
+      return toast.success(options.message, toastOptions);
       break;
     case "error":
-      toast.error(options.message, toastOptions);
+      return toast.error(options.message, toastOptions);
       break;
     case "warning":
-      toast.warning(options.message, toastOptions);
+      return toast.warning(options.message, toastOptions);
       break;
     default:
       toast.error("Something went wrong", toastOptions);
