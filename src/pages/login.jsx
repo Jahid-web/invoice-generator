@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, Navigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useAuthContext } from "../context/auth/authContextProvider";
 import { LuLoader2 } from "react-icons/lu";
 import { FcGoogle } from "react-icons/fc";
@@ -11,6 +11,7 @@ export const Login = () => {
   const [error, setError] = useState();
   const [loading, setLoading] = useState();
   const { signIn, signWithGoogle, currentUser } = useAuthContext();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,6 +25,9 @@ export const Login = () => {
         message: "You logged in successfully!",
         position: "top-center",
       });
+      setInterval(() => {
+        navigate("/");
+      }, 2000);
     } catch (error) {
       setLoading(false);
       setError("Failed to login an account!");
@@ -40,6 +44,11 @@ export const Login = () => {
     } catch (error) {
       setLoading(false);
       setError("Failed to login an account!");
+      Toastify({
+        type: "error",
+        message: "Failed to login an account!",
+        position: "top-center",
+      });
     }
   };
 
@@ -53,7 +62,7 @@ export const Login = () => {
 
   return (
     <div className="dark:bg-gray-900 w-screen h-screen flex justify-center items-center">
-      {currentUser && <Navigate to="/" replace={true} />}
+      {/* {currentUser && <Navigate to="/" replace={true} />} */}
       <div className="relative mx-auto w-full max-w-md bg-white dark:bg-gray-800 px-6 pt-10 pb-8 shadow-xl ring-1 ring-gray-900/5 sm:rounded-xl sm:px-10">
         <div className="w-full">
           <div className="text-center">
@@ -111,11 +120,11 @@ export const Login = () => {
                   )}
                 </button>
               </div>
-              {error && (
+              {/* {error && (
                 <span className="text-sm text-red-400  text-center">
                   {error}
                 </span>
-              )}
+              )} */}
               <p className="text-center text-sm text-gray-500">
                 Don&#x27;t have an account yet?
                 <Link

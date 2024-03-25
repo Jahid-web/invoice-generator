@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 import { LuLoader2 } from "react-icons/lu";
 import SelectionOptionMenu from "./SelectionOptionMenu";
 import InputField from "./InputField";
 import { addDoc, collection } from "firebase/firestore";
-import { db } from "../firebase.config";
+import { db, storage } from "../firebase.config";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import Toastify from "../utils/Toastify";
+import { getInvoiceNo } from "../utils/appFeatures";
 
 const InvoiceForm = ({ setModalOpen }) => {
   const [invoiceData, setInvoiceData] = useState({
@@ -17,21 +20,41 @@ const InvoiceForm = ({ setModalOpen }) => {
     description: "",
     billAmount: "",
     advanceAmount: "",
+    preVoucher: "",
   });
   const [loading, setLoading] = useState();
   const [error, setError] = useState();
+  const [uploadedFile, setUploadedFile] = useState("");
+  const [uploadFile, setUploadFile] = useState();
+  const [getInvNo, setGetInvNo] = useState(getInvoiceNo());
+  const fileRef = useRef(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
+      uploadFiletoStorage();
       setError("");
       setLoading(true);
+      invoiceData.preVoucher = uploadFiletoStorage(uploadFile);
+      invoiceData.invoiceNo = getInvNo;
+      console.log(invoiceData);
       const docRef = await addDoc(collection(db, "invoices"), invoiceData);
+      Toastify({
+        type: "success",
+        message: "Invoice Save successfully!",
+        position: "top-center",
+      });
       setLoading(false);
     } catch (err) {
+      console.log(err);
+
       setLoading(false);
       setError("Failed to add new invoice!");
+      Toastify({
+        type: "error",
+        message: "Failed to add new invoice!",
+        position: "top-center",
+      });
     }
   };
 
@@ -39,10 +62,26 @@ const InvoiceForm = ({ setModalOpen }) => {
     const { name, value } = e.target;
     setInvoiceData({
       ...invoiceData,
-      invoiceNo: "123456",
       [name]: value,
     });
   };
+
+  const uploadFiletoStorage = (upFile) => {
+    if (!upFile) return;
+
+    const uploadRef = ref(storage, `voucher/${upFile.name}`);
+
+    uploadBytes(uploadRef, uploadFile).then((snapshot) => {
+      getDownloadURL(snapshot.ref).then((url) => {
+        return url;
+      });
+    });
+  };
+
+  const handleFileChange = (e) => {
+    setUploadFile(e.target.files[0]);
+  };
+
   return (
     <div className="overflow-y-auto overflow-x-hidden  fixed top-0 right-0 left-0 z-50 bg-gray-800 bg-opacity-60 flex justify-center items-center w-full md:inset-0 h-full">
       <div className="relative p-4 w-full max-w-xl max-h-full">
@@ -94,7 +133,7 @@ const InvoiceForm = ({ setModalOpen }) => {
                   name="invoiceNo"
                   id="invoiceNo"
                   className="bg-gray-50  text-gray-900 text-sm rounded-lg  block w-full p-2.5 dark:bg-gray-700  dark:text-white dark:focus:ring-0 dark:focus:border-gray-500"
-                  value="43356"
+                  value={getInvNo}
                   required=""
                   readOnly
                   // defaultValue="123456"
@@ -150,7 +189,10 @@ const InvoiceForm = ({ setModalOpen }) => {
                   className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
                   id="file_input"
                   type="file"
+                  ref={fileRef}
+                  onChange={handleFileChange}
                 />
+                {/* <span onClick={() => handleFileClick()}></span> */}
               </div>
             </div>
             <button

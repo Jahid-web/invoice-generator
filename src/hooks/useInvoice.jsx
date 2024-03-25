@@ -6,7 +6,7 @@ export default function useInvoice() {
   const [invoices, setInvoices] = useState([]);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemPerPage, setItemPerPage] = useState(1);
+  const [itemPerPage, setItemPerPage] = useState(5);
   // const [startPageIndex, setStartPageIndex] = useState(0);
   // const [endPageIndex, setEndPageIndex] = useState(itemPerPage - 1);
 
