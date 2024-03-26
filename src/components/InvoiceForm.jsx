@@ -1,13 +1,13 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 import { LuLoader2 } from "react-icons/lu";
 import SelectionOptionMenu from "./SelectionOptionMenu";
 import InputField from "./InputField";
-import { addDoc, collection } from "firebase/firestore";
-import { db, storage } from "../firebase.config";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import Toastify from "../utils/Toastify";
-import { getInvoiceNo } from "../utils/appFeatures";
+import { storage } from "../firebase.config";
+import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
+import useInvoice from "../hooks/useInvoice";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { FiCheck } from "react-icons/fi";
 
 const InvoiceForm = ({ setModalOpen }) => {
   const [invoiceData, setInvoiceData] = useState({
@@ -22,39 +22,30 @@ const InvoiceForm = ({ setModalOpen }) => {
     advanceAmount: "",
     preVoucher: "",
   });
-  const [loading, setLoading] = useState();
-  const [error, setError] = useState();
-  const [uploadedFile, setUploadedFile] = useState("");
+  const [uploadedUrl, setUploadedUrl] = useState("");
   const [uploadFile, setUploadFile] = useState();
-  const [getInvNo, setGetInvNo] = useState(getInvoiceNo());
-  const fileRef = useRef(null);
+  const [progressStatus, setProgressStatus] = useState();
+  const { addNewInvoice, error, loading, getInvNo } = useInvoice(uploadedUrl);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      uploadFiletoStorage();
-      setError("");
-      setLoading(true);
-      invoiceData.preVoucher = uploadFiletoStorage(uploadFile);
-      invoiceData.invoiceNo = getInvNo;
-      console.log(invoiceData);
-      const docRef = await addDoc(collection(db, "invoices"), invoiceData);
-      Toastify({
-        type: "success",
-        message: "Invoice Save successfully!",
-        position: "top-center",
+      await addNewInvoice(invoiceData);
+      setInvoiceData({
+        category: "",
+        project: "",
+        payableTo: "",
+        voucherNo: "",
+        voucherDate: "",
+        invoiceNo: "",
+        description: "",
+        billAmount: "",
+        advanceAmount: "",
+        preVoucher: "",
       });
-      setLoading(false);
+      setModalOpen(false);
     } catch (err) {
       console.log(err);
-
-      setLoading(false);
-      setError("Failed to add new invoice!");
-      Toastify({
-        type: "error",
-        message: "Failed to add new invoice!",
-        position: "top-center",
-      });
     }
   };
 
@@ -66,21 +57,43 @@ const InvoiceForm = ({ setModalOpen }) => {
     });
   };
 
-  const uploadFiletoStorage = (upFile) => {
-    if (!upFile) return;
+  useEffect(() => {
+    const uploadFiletoStorage = () => {
+      const fileName = `${getInvNo}-${uploadFile.name}`;
+      const uploadRef = ref(storage, `voucher/${fileName}`);
+      const uploadTask = uploadBytesResumable(uploadRef, uploadFile);
 
-    const uploadRef = ref(storage, `voucher/${upFile.name}`);
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          setProgressStatus(progress);
+          switch (snapshot.state) {
+            case "paused":
+              console.log("Upload is paused");
+              break;
+            case "running":
+              console.log("Upload is running");
+              break;
+            default:
+              break;
+          }
+        },
+        (err) => {
+          console.log(err);
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+            setUploadedUrl(url);
+          });
+        }
+      );
+    };
+    uploadFile && uploadFiletoStorage();
+  }, [uploadFile]);
 
-    uploadBytes(uploadRef, uploadFile).then((snapshot) => {
-      getDownloadURL(snapshot.ref).then((url) => {
-        return url;
-      });
-    });
-  };
-
-  const handleFileChange = (e) => {
-    setUploadFile(e.target.files[0]);
-  };
+  console.log("invoice form");
 
   return (
     <div className="overflow-y-auto overflow-x-hidden  fixed top-0 right-0 left-0 z-50 bg-gray-800 bg-opacity-60 flex justify-center items-center w-full md:inset-0 h-full">
@@ -99,9 +112,9 @@ const InvoiceForm = ({ setModalOpen }) => {
           </div>
 
           <form onSubmit={handleSubmit} className="p-4 md:p-5">
-            {error && (
+            {/* {error && (
               <span className="text-sm text-red-400  text-center">{error}</span>
-            )}
+            )} */}
             <div className="grid gap-4 mb-4 grid-cols-2">
               <SelectionOptionMenu
                 label={"Category"}
@@ -109,6 +122,7 @@ const InvoiceForm = ({ setModalOpen }) => {
                 options={["salary", "convence", "misc."]}
                 value={invoiceData.category}
                 onChange={handleChange}
+                htmlFor="category"
               />
               <SelectionOptionMenu
                 label={"Project"}
@@ -116,6 +130,7 @@ const InvoiceForm = ({ setModalOpen }) => {
                 options={["SAIA CTG", "Irshal Colony", "Jessore"]}
                 value={invoiceData.project}
                 onChange={handleChange}
+                htmlFor="project"
               />
               <InputField
                 label={"Payable TO"}
@@ -123,11 +138,9 @@ const InvoiceForm = ({ setModalOpen }) => {
                 name={"payableTo"}
                 value={invoiceData.payableTo}
                 onChange={handleChange}
+                htmlFor="payableTo"
               />
               <div className="col-span-2 sm:col-span-1">
-                <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                  Invoice No.
-                </label>
                 <input
                   type="number"
                   name="invoiceNo"
@@ -136,7 +149,7 @@ const InvoiceForm = ({ setModalOpen }) => {
                   value={getInvNo}
                   required=""
                   readOnly
-                  // defaultValue="123456"
+                  autoComplete="off"
                 />
               </div>
               <InputField
@@ -145,6 +158,7 @@ const InvoiceForm = ({ setModalOpen }) => {
                 name={"voucherNo"}
                 value={invoiceData.voucherNo}
                 onChange={handleChange}
+                htmlFor="voucherNo"
               />
               <InputField
                 label={"Voucher Date"}
@@ -152,11 +166,9 @@ const InvoiceForm = ({ setModalOpen }) => {
                 name={"voucherDate"}
                 value={invoiceData.voucherDate}
                 onChange={handleChange}
+                htmlFor="voucherDate"
               />
               <div className="col-span-2">
-                <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                  Description
-                </label>
                 <textarea
                   id="description"
                   rows="4"
@@ -165,6 +177,7 @@ const InvoiceForm = ({ setModalOpen }) => {
                   name="description"
                   value={invoiceData.description}
                   onChange={handleChange}
+                  autoComplete="off"
                 ></textarea>
               </div>
               <InputField
@@ -173,6 +186,7 @@ const InvoiceForm = ({ setModalOpen }) => {
                 name={"billAmount"}
                 value={invoiceData.billAmount}
                 onChange={handleChange}
+                htmlFor="billAmount"
               />
               <InputField
                 label={"Advance Amount"}
@@ -180,24 +194,37 @@ const InvoiceForm = ({ setModalOpen }) => {
                 name={"advanceAmount"}
                 value={invoiceData.advanceAmount}
                 onChange={handleChange}
+                htmlFor="advanceAmount"
               />
               <div className="col-span-2">
-                <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                  Upload file
-                </label>
-                <input
-                  className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
-                  id="file_input"
-                  type="file"
-                  ref={fileRef}
-                  onChange={handleFileChange}
-                />
-                {/* <span onClick={() => handleFileClick()}></span> */}
+                <div className="flex items-center gap-2 pr-3">
+                  <input
+                    className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
+                    id="file_input"
+                    type="file"
+                    onChange={(e) => setUploadFile(e.target.files[0])}
+                    autoComplete="off"
+                  />
+                  {uploadFile && (
+                    <>
+                      {progressStatus !== null && progressStatus < 100 ? (
+                        <AiOutlineLoading3Quarters className="text-2xl text-gray-500 animate-spin" />
+                      ) : (
+                        <FiCheck className="text-2xl text-green-600" />
+                      )}
+                    </>
+                  )}
+                </div>
               </div>
             </div>
             <button
+              disabled={progressStatus !== null && progressStatus < 100}
               type="submit"
-              className="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-0 focus:outline-none  font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 "
+              className={`${
+                progressStatus !== null && progressStatus < 100
+                  ? "bg-blue-700 opacity-30"
+                  : "bg-blue-700 "
+              } text-white inline-flex items-center  hover:bg-blue-800 focus:ring-0 focus:outline-none  font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700`}
             >
               {!loading ? (
                 "Add new Invoice"

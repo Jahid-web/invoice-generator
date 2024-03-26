@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuthContext } from "../context/auth/authContextProvider";
 import { LuLoader2 } from "react-icons/lu";
 import { FcGoogle } from "react-icons/fc";
 import Toastify from "../utils/Toastify";
-import { toast } from "react-toastify";
+import InputField from "../components/InputField";
 
-export const Login = () => {
+const Login = () => {
   const [user, setUser] = useState({ email: "", password: "" });
   const [error, setError] = useState();
   const [loading, setLoading] = useState();
@@ -25,9 +25,7 @@ export const Login = () => {
         message: "You logged in successfully!",
         position: "top-center",
       });
-      setInterval(() => {
-        navigate("/");
-      }, 2000);
+      navigate("/");
     } catch (error) {
       setLoading(false);
       setError("Failed to login an account!");
@@ -59,6 +57,7 @@ export const Login = () => {
       [name]: value,
     });
   };
+  console.log("login");
 
   return (
     <div className="dark:bg-gray-900 w-screen h-screen flex justify-center items-center">
@@ -76,34 +75,26 @@ export const Login = () => {
 
           <div className="mt-5">
             <form onSubmit={handleSubmit}>
-              <div className="relative mt-6">
+              <div className="mt-6">
                 <input
                   type="email"
                   name="email"
-                  id="email"
                   placeholder="Email Address"
-                  className="peer peer w-full border-b-2 border-gray-300 dark:text-gray-200 dark:border-gray-700 dark:bg-gray-800 py-2 rounded-lg placeholder:text-transparent focus:border-gray-300 dark:focus:border-gray-700 focus:ring-0 focus:outline-none"
-                  autoComplete="NA"
+                  className="w-full border-b-2 border-gray-300 dark:text-gray-200 dark:border-gray-700 dark:bg-gray-800 py-2 rounded-lg placeholder:text-gray-800 dark:placeholder:text-gray-600 focus:border-gray-300 dark:focus:border-gray-700 focus:ring-0 focus:outline-none"
                   value={user.email}
                   onChange={handleChange}
                 />
-                <label className="pointer-events-none top-0 absolute bg-gray-50 dark:bg-gray-800 left-4 origin-left -translate-y-1/2 transform text-sm text-gray-800  opacity-75 transition-all duration-100 ease-in-out peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-focus:top-0 peer-focus:pl-0 peer-focus:text-sm peer-focus:text-gray-800 dark:peer-focus:text-gray-400">
-                  Email Address
-                </label>
               </div>
-              <div className="relative mt-6">
+              <div className="mt-6">
                 <input
                   type="password"
                   name="password"
-                  id="password"
                   placeholder="Password"
-                  className="peer peer w-full border-b-2 border-gray-300 dark:text-gray-200 dark:border-gray-700 dark:bg-gray-800 py-2 rounded-lg placeholder:text-transparent focus:border-gray-300 dark:focus:border-gray-700 focus:ring-0 focus:outline-none"
+                  className="w-full border-b-2 border-gray-300 dark:text-gray-200 dark:border-gray-700 dark:bg-gray-800 py-2 rounded-lg placeholder:text-gray-800 dark:placeholder:text-gray-600 focus:border-gray-300 dark:focus:border-gray-700 focus:ring-0 focus:outline-none"
                   value={user.password}
                   onChange={handleChange}
+                  autoComplete="off"
                 />
-                <label className="pointer-events-none top-0 absolute bg-gray-50 dark:bg-gray-800 left-4 origin-left -translate-y-1/2 transform text-sm text-gray-800  opacity-75 transition-all duration-100 ease-in-out peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-focus:top-0 peer-focus:pl-0 peer-focus:text-sm peer-focus:text-gray-800 dark:peer-focus:text-gray-400">
-                  Password
-                </label>
               </div>
               <div className="my-6">
                 <button
@@ -133,7 +124,6 @@ export const Login = () => {
                 >
                   Sign up
                 </Link>
-                .
               </p>
               <div className="my-4 flex items-center before:mt-0.5 before:flex-1 before:border-t before:border-neutral-300 after:mt-0.5 after:flex-1 after:border-t after:border-neutral-300 dark:before:border-neutral-500 dark:after:border-neutral-500">
                 <p className="mx-4 mb-0 text-center font-semibold dark:text-neutral-200">
@@ -167,3 +157,5 @@ export const Login = () => {
     </div>
   );
 };
+
+export default Login;

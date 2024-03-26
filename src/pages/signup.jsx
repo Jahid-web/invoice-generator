@@ -44,6 +44,8 @@ const SignUp = () => {
     });
   };
 
+  console.log("signup");
+
   return (
     <div className="dark:bg-gray-900 w-screen h-screen flex justify-center items-center">
       <div className="relative mx-auto w-full max-w-md bg-white dark:bg-gray-800 px-6 pt-10 pb-8 shadow-xl ring-1 ring-gray-900/5 sm:rounded-xl sm:px-10">
@@ -64,8 +66,12 @@ const SignUp = () => {
                   className="peer peer w-full border-b-2 border-gray-300 dark:text-gray-200 dark:border-gray-700 dark:bg-gray-800 py-2 rounded-lg placeholder:text-transparent focus:border-gray-300 dark:focus:border-gray-700 focus:ring-0 focus:outline-none"
                   value={user.username}
                   onChange={handleChange}
+                  autoComplete="off"
                 />
-                <label className="pointer-events-none top-0 absolute bg-gray-50 dark:bg-gray-800 left-4 origin-left -translate-y-1/2 transform text-sm text-gray-800  opacity-75 transition-all duration-100 ease-in-out peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-focus:top-0 peer-focus:pl-0 peer-focus:text-sm peer-focus:text-gray-800 dark:peer-focus:text-gray-400">
+                <label
+                  htmlFor="username"
+                  className="pointer-events-none top-0 absolute bg-gray-50 dark:bg-gray-800 left-4 origin-left -translate-y-1/2 transform text-sm text-gray-800  opacity-75 transition-all duration-100 ease-in-out peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-focus:top-0 peer-focus:pl-0 peer-focus:text-sm peer-focus:text-gray-800 dark:peer-focus:text-gray-400"
+                >
                   Full Name
                 </label>
               </div>
@@ -76,11 +82,14 @@ const SignUp = () => {
                   id="email"
                   placeholder="Email Address"
                   className="peer peer w-full border-b-2 border-gray-300 dark:text-gray-200 dark:border-gray-700 dark:bg-gray-800 py-2 rounded-lg placeholder:text-transparent focus:border-gray-300 dark:focus:border-gray-700 focus:ring-0 focus:outline-none"
-                  autoComplete="NA"
                   value={user.email}
                   onChange={handleChange}
+                  autoComplete="off"
                 />
-                <label className="pointer-events-none top-0 absolute bg-gray-50 dark:bg-gray-800 left-4 origin-left -translate-y-1/2 transform text-sm text-gray-800  opacity-75 transition-all duration-100 ease-in-out peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-focus:top-0 peer-focus:pl-0 peer-focus:text-sm peer-focus:text-gray-800 dark:peer-focus:text-gray-400">
+                <label
+                  htmlFor="email"
+                  className="pointer-events-none top-0 absolute bg-gray-50 dark:bg-gray-800 left-4 origin-left -translate-y-1/2 transform text-sm text-gray-800  opacity-75 transition-all duration-100 ease-in-out peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-focus:top-0 peer-focus:pl-0 peer-focus:text-sm peer-focus:text-gray-800 dark:peer-focus:text-gray-400"
+                >
                   Email Address
                 </label>
               </div>
@@ -93,8 +102,12 @@ const SignUp = () => {
                   className="peer peer w-full border-b-2 border-gray-300 dark:text-gray-200 dark:border-gray-700 dark:bg-gray-800 py-2 rounded-lg placeholder:text-transparent focus:border-gray-300 dark:focus:border-gray-700 focus:ring-0 focus:outline-none"
                   value={user.password}
                   onChange={handleChange}
+                  autoComplete="off"
                 />
-                <label className="pointer-events-none top-0 absolute bg-gray-50 dark:bg-gray-800 left-4 origin-left -translate-y-1/2 transform text-sm text-gray-800  opacity-75 transition-all duration-100 ease-in-out peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-focus:top-0 peer-focus:pl-0 peer-focus:text-sm peer-focus:text-gray-800 dark:peer-focus:text-gray-400">
+                <label
+                  htmlFor="password"
+                  className="pointer-events-none top-0 absolute bg-gray-50 dark:bg-gray-800 left-4 origin-left -translate-y-1/2 transform text-sm text-gray-800  opacity-75 transition-all duration-100 ease-in-out peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-focus:top-0 peer-focus:pl-0 peer-focus:text-sm peer-focus:text-gray-800 dark:peer-focus:text-gray-400"
+                >
                   Password
                 </label>
               </div>

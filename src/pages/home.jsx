@@ -12,7 +12,7 @@ const Home = () => {
   const [modalOpen, setModalOpen] = useState(false);
 
   return (
-    <div className="max-w-screen-6xl mx-auto md:px-12 overflow-hidden dark:bg-gray-900 relative h-screen">
+    <div className="max-w-6xl lg:px-12 px-2 overflow-hidden dark:bg-gray-900 relative h-screen">
       {modalOpen && <InvoiceForm setModalOpen={setModalOpen} />}
 
       <Navbar />
@@ -60,7 +60,7 @@ const Home = () => {
           </div>
         </div>
         {/* table data here */}
-        <div className="overflow-x-auto mt-2">
+        <div className="overflow-x-auto mt-2 ">
           <DataTable />
         </div>
         {/* <Pagination

@@ -1,79 +1,67 @@
-import { collection, getDocs } from "firebase/firestore";
+import { addDoc, collection, getDocs, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase.config";
 import { useEffect, useState } from "react";
+import { getInvoiceNo } from "../utils/appFeatures";
+import Toastify from "../utils/Toastify";
 
-export default function useInvoice() {
+export default function useInvoice(uploadedUrl) {
   const [invoices, setInvoices] = useState([]);
+  const [loading, setLoading] = useState();
+  const [error, setError] = useState();
+  const [getInvNo, setGetInvNo] = useState(getInvoiceNo());
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemPerPage, setItemPerPage] = useState(5);
-  // const [startPageIndex, setStartPageIndex] = useState(0);
-  // const [endPageIndex, setEndPageIndex] = useState(itemPerPage - 1);
+  const addNewInvoice = async (invoiceData) => {
+    try {
+      setError("");
+      setLoading(true);
+      invoiceData.invoiceNo = getInvNo;
+      invoiceData.preVoucher = uploadedUrl;
+      console.log(invoiceData);
+      await addDoc(collection(db, "invoices"), invoiceData);
+      Toastify({
+        type: "success",
+        message: "Invoice Save successfully!",
+        position: "top-center",
+      });
+      setLoading(false);
+    } catch (err) {
+      console.log(err);
 
-  const endIndex = currentPage * itemPerPage;
-  const startIndex = endIndex - itemPerPage;
-  const currentItems = invoices.slice(startIndex, endIndex);
-
-  const paginationNumbers = [];
+      setLoading(false);
+      setError("Failed to add new invoice!");
+      Toastify({
+        type: "error",
+        message: "Failed to add new invoice!",
+        position: "top-center",
+      });
+    }
+  };
 
   useEffect(() => {
-    const getInvoices = async () => {
-      const invoices = collection(db, "invoices");
-      const snapshot = await getDocs(invoices);
-      const data = snapshot.docs.map((doc) => doc.data());
-      setInvoices(data);
-    };
+    const unsub = onSnapshot(
+      collection(db, "invoices"),
+      (snap) => {
+        setError("");
+        setLoading(true);
+        const data = snap.docs.map((doc) => doc.data());
+        setInvoices(data);
+        setLoading(false);
+      },
+      (err) => {
+        setLoading(false);
+        setError("Someting went wrong!");
+        console.log(err);
+      }
+    );
 
-    getInvoices();
+    return () => unsub();
   }, []);
-
-  for (let i = 1; i <= Math.ceil(invoices.length / itemPerPage); i++) {
-    paginationNumbers.push(i);
-  }
-
-  const totalPages = Math.ceil(invoices.length / itemPerPage);
-
-  // const displayPage = (pageNo) => {
-  //   setCurrentPage(pageNo);
-  //   let lastPageIndex = itemPerPage * pageNo - 1;
-  //   let firstPageIndex = itemPerPage * pageNo - itemPerPage;
-
-  //   setStartPageIndex(firstPageIndex);
-
-  //   if (lastPageIndex > invoices.length) {
-  //     setEndPageIndex(invoices.length - 1);
-  //   } else {
-  //     setEndPageIndex(lastPageIndex);
-  //   }
-  // };
-
-  const paginate = (pageNo) => {
-    setCurrentPage(pageNo);
-  };
-
-  // previous page
-  const prevPage = () => {
-    if (currentPage !== 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
-
-  const nextPage = () => {
-    if (currentPage !== Math.ceil(invoices.length / itemPerPage)) {
-      setCurrentPage(currentPage + 1);
-    }
-  };
 
   return {
     invoices,
-    currentPage,
-    totalPages,
-    paginate,
-    currentItems,
-    startIndex,
-    endIndex,
-    paginationNumbers,
-    prevPage,
-    nextPage,
+    addNewInvoice,
+    error,
+    loading,
+    getInvNo,
   };
 }
