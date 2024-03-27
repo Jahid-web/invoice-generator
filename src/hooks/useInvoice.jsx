@@ -1,4 +1,11 @@
-import { addDoc, collection, getDocs, onSnapshot } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  updateDoc,
+  onSnapshot,
+  doc,
+  setDoc,
+} from "firebase/firestore";
 import { db } from "../firebase.config";
 import { useEffect, useState } from "react";
 import { getInvoiceNo } from "../utils/appFeatures";
@@ -36,14 +43,28 @@ export default function useInvoice(uploadedUrl) {
     }
   };
 
+  const updateInvoice = async (id, data) => {
+    try {
+      console.log(id, data);
+      setError("");
+      setLoading(true);
+      const updateRef = doc(db, "invoices", id);
+      await updateDoc(updateRef, data, { marge: true });
+      setLoading(false);
+    } catch (error) {
+      setError("Failed to update the document!");
+    }
+  };
+
   useEffect(() => {
     const unsub = onSnapshot(
       collection(db, "invoices"),
       (snap) => {
+        let list = [];
         setError("");
         setLoading(true);
-        const data = snap.docs.map((doc) => doc.data());
-        setInvoices(data);
+        snap.docs.forEach((doc) => list.push({ id: doc.id, ...doc.data() }));
+        setInvoices(list);
         setLoading(false);
       },
       (err) => {
@@ -62,5 +83,6 @@ export default function useInvoice(uploadedUrl) {
     error,
     loading,
     getInvNo,
+    updateInvoice,
   };
 }

@@ -4,13 +4,18 @@ import Navbar from "../components/navbar";
 import TabMenu from "../components/tabMenu";
 import InvoiceForm from "../components/InvoiceForm";
 import Filtering from "../components/Filtering";
+import useInvoice from "../hooks/useInvoice";
 
 const Home = () => {
   const [modalOpen, setModalOpen] = useState(false);
+  const [edit, setEdit] = useState("");
+  const { invoices } = useInvoice();
 
   return (
     <div className="max-w-full mx-auto xl:px-12 px-2 dark:bg-gray-900 relative h-screen">
-      {modalOpen && <InvoiceForm setModalOpen={setModalOpen} />}
+      {modalOpen && (
+        <InvoiceForm setModalOpen={setModalOpen} id={edit} data={invoices} />
+      )}
 
       <Navbar />
       <TabMenu />
@@ -42,7 +47,7 @@ const Home = () => {
         </div>
         {/* table data here */}
         <div className="overflow-x-auto mt-2 ">
-          <DataTable setModalOpen={setModalOpen} />
+          <DataTable setModalOpen={setModalOpen} setEdit={setEdit} />
         </div>
       </div>
     </div>

@@ -8,10 +8,10 @@ import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import useInvoice from "../hooks/useInvoice";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { FiCheck } from "react-icons/fi";
-import { category } from "../../public/data/data";
-import { projectName } from "../../public/data/data";
+import { category } from "../data/data";
+import { projectName } from "../data/data";
 
-const InvoiceForm = ({ setModalOpen }) => {
+const InvoiceForm = ({ setModalOpen, id, data }) => {
   const [invoiceData, setInvoiceData] = useState({
     category: "",
     project: "",
@@ -27,28 +27,37 @@ const InvoiceForm = ({ setModalOpen }) => {
   const [uploadedUrl, setUploadedUrl] = useState("");
   const [uploadFile, setUploadFile] = useState();
   const [progressStatus, setProgressStatus] = useState();
-  const { addNewInvoice, error, loading, getInvNo } = useInvoice(uploadedUrl);
+  const { addNewInvoice, error, loading, getInvNo, updateInvoice } =
+    useInvoice(uploadedUrl);
+  const [editId, setEditId] = useState(id);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await addNewInvoice(invoiceData);
-      setInvoiceData({
-        category: "",
-        project: "",
-        payableTo: "",
-        voucherNo: "",
-        voucherDate: "",
-        invoiceNo: "",
-        description: "",
-        billAmount: "",
-        advanceAmount: "",
-        preVoucher: "",
-      });
-      setModalOpen(false);
+      if (editId) {
+        await updateInvoice(editId, invoiceData);
+        setModalOpen(false);
+        setEditId("");
+      } else {
+        await addNewInvoice(invoiceData);
+        setModalOpen(false);
+      }
     } catch (err) {
       console.log(err);
     }
+
+    setInvoiceData({
+      category: "",
+      project: "",
+      payableTo: "",
+      voucherNo: "",
+      voucherDate: "",
+      invoiceNo: "",
+      description: "",
+      billAmount: "",
+      advanceAmount: "",
+      preVoucher: "",
+    });
   };
 
   const handleChange = (e) => {
@@ -94,6 +103,14 @@ const InvoiceForm = ({ setModalOpen }) => {
     };
     uploadFile && uploadFiletoStorage();
   }, [uploadFile]);
+
+  useEffect(() => {
+    if (editId) {
+      const invoice = data.filter((item) => item.id === id);
+      setInvoiceData(invoice[0]);
+      setEditId("");
+    }
+  }, [editId]);
 
   return (
     <div className="overflow-y-auto overflow-x-hidden  fixed top-0 right-0 left-0 z-50 bg-gray-800 bg-opacity-60 flex justify-center items-center w-full md:inset-0 h-full">
@@ -146,7 +163,7 @@ const InvoiceForm = ({ setModalOpen }) => {
                   name="invoiceNo"
                   id="invoiceNo"
                   className="bg-gray-50  text-gray-900 text-sm rounded-lg  block w-full p-2.5 dark:bg-gray-700  dark:text-white dark:focus:ring-0 dark:focus:border-gray-500"
-                  value={getInvNo}
+                  value={invoiceData.invoiceNo || getInvNo}
                   required=""
                   readOnly
                   autoComplete="off"

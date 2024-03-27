@@ -6,7 +6,7 @@ import Pagination from "../components/pagination";
 import usePagination from "../hooks/usePagination";
 import { formatMoney } from "../utils/appFeatures";
 
-const DataTable = ({ setModalOpen }) => {
+const DataTable = ({ setModalOpen, setEdit }) => {
   const [toggleInd, setToggleInd] = useState(null);
   const { invoices } = useInvoice();
   const {
@@ -21,9 +21,8 @@ const DataTable = ({ setModalOpen }) => {
     currentPage,
   } = usePagination(invoices);
 
-  const handleClick = (invoiceNo) => {
-    const d = currentItems.filter((itm) => itm.invoiceNo === invoiceNo);
-    console.log(d);
+  const handleClick = (id) => {
+    setEdit(id);
   };
 
   return (
@@ -82,7 +81,7 @@ const DataTable = ({ setModalOpen }) => {
                         <MdOutlineAttachment className="text-xl text-center cursor-pointer" />
                       </a>
                     ) : (
-                      <span>No Voucher Uploaded</span>
+                      <span>Nothing</span>
                     )}
                   </td>
                   <td className="px-4 py-1.5 ">
@@ -118,7 +117,7 @@ const DataTable = ({ setModalOpen }) => {
                                 onClick={() => {
                                   setModalOpen(true),
                                     setToggleInd(null),
-                                    handleClick(item.invoiceNo);
+                                    handleClick(item.id);
                                 }}
                                 className="cursor-pointer flex items-center justify-center dark:hover:bg-gray-900/75 py-1.5"
                               >
