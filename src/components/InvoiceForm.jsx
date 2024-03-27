@@ -8,6 +8,8 @@ import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import useInvoice from "../hooks/useInvoice";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { FiCheck } from "react-icons/fi";
+import { category } from "../../public/data/data";
+import { projectName } from "../../public/data/data";
 
 const InvoiceForm = ({ setModalOpen }) => {
   const [invoiceData, setInvoiceData] = useState({
@@ -93,8 +95,6 @@ const InvoiceForm = ({ setModalOpen }) => {
     uploadFile && uploadFiletoStorage();
   }, [uploadFile]);
 
-  console.log("invoice form");
-
   return (
     <div className="overflow-y-auto overflow-x-hidden  fixed top-0 right-0 left-0 z-50 bg-gray-800 bg-opacity-60 flex justify-center items-center w-full md:inset-0 h-full">
       <div className="relative p-4 w-full max-w-xl max-h-full">
@@ -119,7 +119,7 @@ const InvoiceForm = ({ setModalOpen }) => {
               <SelectionOptionMenu
                 label={"Category"}
                 name={"category"}
-                options={["salary", "convence", "misc."]}
+                options={category}
                 value={invoiceData.category}
                 onChange={handleChange}
                 htmlFor="category"
@@ -127,7 +127,7 @@ const InvoiceForm = ({ setModalOpen }) => {
               <SelectionOptionMenu
                 label={"Project"}
                 name={"project"}
-                options={["SAIA CTG", "Irshal Colony", "Jessore"]}
+                options={projectName}
                 value={invoiceData.project}
                 onChange={handleChange}
                 htmlFor="project"

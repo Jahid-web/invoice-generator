@@ -16,7 +16,6 @@ export default function useInvoice(uploadedUrl) {
       setLoading(true);
       invoiceData.invoiceNo = getInvNo;
       invoiceData.preVoucher = uploadedUrl;
-      console.log(invoiceData);
       await addDoc(collection(db, "invoices"), invoiceData);
       Toastify({
         type: "success",

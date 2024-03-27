@@ -1,13 +1,6 @@
 import React from "react";
 
-const SelectionOptionMenu = ({
-  label,
-  options,
-  name,
-  value,
-  onChange,
-  htmlFor,
-}) => {
+const SelectionOptionMenu = ({ label, options, name, value, onChange }) => {
   return (
     <div className="col-span-2 sm:col-span-1">
       <select
@@ -20,8 +13,8 @@ const SelectionOptionMenu = ({
       >
         {/* <option selected="">Select category</option> */}
 
-        {options.map((op) => (
-          <option key={op} value={op}>
+        {options.map((op, i) => (
+          <option key={i} value={op}>
             {op}
           </option>
         ))}

@@ -6,8 +6,8 @@ import Pagination from "../components/pagination";
 import usePagination from "../hooks/usePagination";
 import { formatMoney } from "../utils/appFeatures";
 
-const DataTable = () => {
-  const [action, setAction] = useState(false);
+const DataTable = ({ setModalOpen }) => {
+  const [toggleInd, setToggleInd] = useState(null);
   const { invoices } = useInvoice();
   const {
     startIndex,
@@ -21,13 +21,18 @@ const DataTable = () => {
     currentPage,
   } = usePagination(invoices);
 
+  const handleClick = (invoiceNo) => {
+    const d = currentItems.filter((itm) => itm.invoiceNo === invoiceNo);
+    console.log(d);
+  };
+
   return (
     <div>
       {!currentItems ? (
         "loading..."
       ) : (
         <>
-          <table className=" text-sm text-left text-gray-500 dark:text-gray-400">
+          <table className="table-auto w-full text-sm text-left text-gray-500 dark:text-gray-400">
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-800 dark:text-gray-300">
               <tr>
                 <th className="px-4 py-1.5 w-[8rem] text-center border dark:border-x dark:border-gray-900">
@@ -39,7 +44,7 @@ const DataTable = () => {
                 <th className="px-4 py-1.5 w-[8rem] text-center border dark:border-x dark:border-gray-900">
                   Memo No.
                 </th>
-                <th className="px-4 py-1.5 w-[26rem] text-center border dark:border-x dark:border-gray-900">
+                <th className="px-4 py-1.5 min-w-[26rem] text-center border dark:border-x dark:border-gray-900">
                   Description
                 </th>
                 <th className="px-4 py-1.5 w-[10rem] text-center border dark:border-x dark:border-gray-900">
@@ -51,7 +56,9 @@ const DataTable = () => {
                 <th className="px-4 py-1.5 w-[8rem] text-center border dark:border-x dark:border-gray-900">
                   View File
                 </th>
-                <th className="px-4 py-1.5 w-[8rem] text-center">Actions</th>
+                <th className="px-4 py-1.5 min-w-[8rem] text-center">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -62,9 +69,7 @@ const DataTable = () => {
                     {item.payableTo}
                   </td>
                   <td className="px-4 py-2 text-center">{item.voucherNo}</td>
-                  <td className="px-4 py-2 line-clamp-2">
-                    ${item.description}
-                  </td>
+                  <td className="px-4 py-2 line-clamp-2">{item.description}</td>
                   <td className="px-4 py-2 text-right">
                     {formatMoney(item.billAmount)}
                   </td>
@@ -72,8 +77,10 @@ const DataTable = () => {
                     {formatMoney(item.advanceAmount)}
                   </td>
                   <td className="px-4 py-1.5 flex justify-center items-center">
-                    {item.preVoucher ? (
-                      <MdOutlineAttachment className="text-xl text-center cursor-pointer" />
+                    {item.preVoucher !== "" ? (
+                      <a href={item.preVoucher} target="_blank">
+                        <MdOutlineAttachment className="text-xl text-center cursor-pointer" />
+                      </a>
                     ) : (
                       <span>No Voucher Uploaded</span>
                     )}
@@ -92,25 +99,38 @@ const DataTable = () => {
                       <span className="relative">
                         <HiOutlineDotsHorizontal
                           className="text-lg cursor-pointer "
-                          onClick={(e) => setAction(i)}
+                          onClick={() => setToggleInd(i)}
                         />
-                        {action === i && (
-                          <ul
-                            // style={{ display: `${action ? "block" : "none"}` }}
-                            className="z-20 absolute right-full w-32 py-1 top-2 space-y-2 bg-slate-300 dark:bg-gray-800 rounded-sm text-sm divide-y divide-gray-400 dark:divide-gray-700"
+                        {toggleInd === i && (
+                          <div
+                            className={`z-20 w-32 shadow-lg absolute right-full -top-1/2`}
                           >
-                            <li className="cursor-pointer flex items-center justify-center">
-                              <span className="text-sm capitalize">delete</span>
-                            </li>
-                            <li className="cursor-pointer flex items-center justify-center">
-                              <span className="text-sm capitalize">edit</span>
-                            </li>
-                            <li className="cursor-pointer flex items-center justify-center">
-                              <span className="text-sm capitalize">
-                                archive
-                              </span>
-                            </li>
-                          </ul>
+                            <ul
+                              // style={{ display: `${action ? "block" : "none"}` }}
+                              className="w-full bg-slate-300 dark:bg-gray-800 rounded-sm text-sm divide-y divide-gray-400 dark:divide-gray-700"
+                            >
+                              <li className="cursor-pointer flex items-center justify-center dark:hover:bg-gray-900/75 py-1.5">
+                                <span className="text-sm capitalize">
+                                  delete
+                                </span>
+                              </li>
+                              <li
+                                onClick={() => {
+                                  setModalOpen(true),
+                                    setToggleInd(null),
+                                    handleClick(item.invoiceNo);
+                                }}
+                                className="cursor-pointer flex items-center justify-center dark:hover:bg-gray-900/75 py-1.5"
+                              >
+                                <span className="text-sm capitalize">edit</span>
+                              </li>
+                              <li className="cursor-pointer flex items-center justify-center dark:hover:bg-gray-900/75 py-1.5">
+                                <span className="text-sm capitalize">
+                                  archive
+                                </span>
+                              </li>
+                            </ul>
+                          </div>
                         )}
                       </span>
                     </div>

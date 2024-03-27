@@ -57,7 +57,6 @@ const Login = () => {
       [name]: value,
     });
   };
-  console.log("login");
 
   return (
     <div className="dark:bg-gray-900 w-screen h-screen flex justify-center items-center">

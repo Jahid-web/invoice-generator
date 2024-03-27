@@ -1,44 +1,25 @@
 import React, { useState } from "react";
-import { AiOutlineSearch } from "react-icons/ai";
 import DataTable from "../components/dataTable";
 import Navbar from "../components/navbar";
 import TabMenu from "../components/tabMenu";
 import InvoiceForm from "../components/InvoiceForm";
-import useInvoice from "../hooks/useInvoice";
-// import { Pagination } from "@mui/material";
-import Pagination from "../components/pagination";
+import Filtering from "../components/Filtering";
 
 const Home = () => {
   const [modalOpen, setModalOpen] = useState(false);
 
   return (
-    <div className="max-w-6xl lg:px-12 px-2 overflow-hidden dark:bg-gray-900 relative h-screen">
+    <div className="max-w-full mx-auto xl:px-12 px-2 dark:bg-gray-900 relative h-screen">
       {modalOpen && <InvoiceForm setModalOpen={setModalOpen} />}
 
       <Navbar />
       <TabMenu />
-      <div className="h-full ">
+      <div className="">
         <h1 className="text-center text-lg md:text-2xl text-slate-700 dark:text-gray-300 capitalize font-bold tracking-wider my-4">
           Daily Invoice List
         </h1>
         <div className="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">
-          <div className="w-full md:w-1/2">
-            <form className="flex items-center">
-              <label className="sr-only">Search</label>
-              <div className="relative w-full">
-                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                  <AiOutlineSearch className="w-6 h-6 dark:text-gray-400" />
-                </div>
-                <input
-                  type="text"
-                  id="simple-search"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-400 block w-full pl-10 p-2 dark:bg-gray-900 dark:border-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-0 dark:focus:border-gray-700"
-                  placeholder="Search"
-                  required=""
-                />
-              </div>
-            </form>
-          </div>
+          <Filtering />
 
           <div className="flex items-center gap-4 w-full md:w-auto">
             <button
@@ -61,14 +42,8 @@ const Home = () => {
         </div>
         {/* table data here */}
         <div className="overflow-x-auto mt-2 ">
-          <DataTable />
+          <DataTable setModalOpen={setModalOpen} />
         </div>
-        {/* <Pagination
-          count={totalPages}
-          onChange={(event, value) => displayPage(value)}
-          variant="outlined"
-          shape="rounded"
-        /> */}
       </div>
     </div>
   );
